@@ -8,11 +8,33 @@ const servicio = new EstudianteService();
 const cursoService = new CursoService();
 const inscripcionService = new InscripcionService();
 let contadorId = servicio.obtenerTodos().length + 1;
+let contadorCursoId = cursoService.obtenerTodos().length + 1;
+let contadorInsId = inscripcionService.obtenerTodos().length + 1;
+// INPUTS ESTUDIANTE
 const nombreInput = document.getElementById("nombre");
 const emailInput = document.getElementById("email");
+const edadInput = document.getElementById("edad");
+const carreraInput = document.getElementById("carrera");
 const btnAgregar = document.getElementById("btnAgregar");
+// INPUTS CURSO
+const nombreCursoInput = document.getElementById("nombreCurso");
+const siglaInput = document.getElementById("sigla");
+const docenteInput = document.getElementById("docente");
+const cupoInput = document.getElementById("cupo");
+const btnAgregarCurso = document.getElementById("btnAgregarCurso");
+// INSCRIPCIÓN
+const selectEstudiante = document.getElementById("selectEstudiante");
+const selectCurso = document.getElementById("selectCurso");
+const btnInscribir = document.getElementById("btnInscribir");
+// ESTADÍSTICAS
+const totalEstudiantes = document.getElementById("totalEstudiantes");
+const totalCursos = document.getElementById("totalCursos");
+const totalInscripciones = document.getElementById("totalInscripciones");
+// =========================
+// ESTUDIANTES
+// =========================
 btnAgregar.addEventListener("click", () => {
-    if (!nombreInput.value || !emailInput.value) {
+    if (!nombreInput.value || !emailInput.value || !edadInput.value || !carreraInput.value) {
         alert("Campos vacíos");
         return;
     }
@@ -25,67 +47,43 @@ btnAgregar.addEventListener("click", () => {
         id: contadorId++,
         nombre: nombreInput.value,
         correo: emailInput.value,
-        estado: "activo",
-        edad: 0,
-        carrera: ""
+        edad: Number(edadInput.value),
+        carrera: carreraInput.value,
+        estado: "activo"
     };
     servicio.agregar(nuevo);
-    actualizarUI();
-    actualizarSelects();
+    actualizarTodo();
     nombreInput.value = "";
     emailInput.value = "";
+    edadInput.value = "";
+    carreraInput.value = "";
 });
-function actualizarUI() {
-    renderEstudiantes(servicio.obtenerTodos(), (id) => {
-        servicio.eliminar(id);
-        actualizarUI();
-        actualizarSelects();
-    });
-}
-window.cambiarEstadoEstudiante = (id) => {
-    servicio.cambiarEstado(id);
-    actualizarUI();
-    actualizarSelects();
-};
-let contadorCursoId = cursoService.obtenerTodos().length + 1;
-const nombreCursoInput = document.getElementById("nombreCurso");
-const creditosInput = document.getElementById("creditos");
-const btnAgregarCurso = document.getElementById("btnAgregarCurso");
+// =========================
+// CURSOS
+// =========================
 btnAgregarCurso.addEventListener("click", () => {
-    if (!nombreCursoInput.value || !creditosInput.value) {
+    if (!nombreCursoInput.value || !siglaInput.value || !docenteInput.value || !cupoInput.value) {
         alert("Campos vacíos");
         return;
     }
     const nuevo = {
         id: contadorCursoId++,
         nombre: nombreCursoInput.value,
-        sigla: "",
-        docente: "",
-        cupoMaximo: Number(creditosInput.value),
+        sigla: siglaInput.value,
+        docente: docenteInput.value,
+        cupoMaximo: Number(cupoInput.value),
         estado: "disponible"
     };
     cursoService.agregar(nuevo);
-    actualizarCursos();
-    actualizarSelects();
+    actualizarTodo();
     nombreCursoInput.value = "";
-    creditosInput.value = "";
+    siglaInput.value = "";
+    docenteInput.value = "";
+    cupoInput.value = "";
 });
-function actualizarCursos() {
-    renderCursos(cursoService.obtenerTodos(), (id) => {
-        cursoService.eliminar(id);
-        actualizarCursos();
-        actualizarSelects();
-    });
-}
-window.cambiarEstadoCurso = (id) => {
-    cursoService.cambiarEstado(id);
-    actualizarCursos();
-    actualizarSelects();
-};
-let contadorInsId = inscripcionService.obtenerTodos().length + 1;
-const selectEstudiante = document.getElementById("selectEstudiante");
-const selectCurso = document.getElementById("selectCurso");
-const btnInscribir = document.getElementById("btnInscribir");
+// =========================
+// INSCRIPCIONES
+// =========================
 btnInscribir.addEventListener("click", () => {
     const estudianteId = Number(selectEstudiante.value);
     const cursoId = Number(selectCurso.value);
@@ -103,42 +101,63 @@ btnInscribir.addEventListener("click", () => {
         alert("Curso cerrado");
         return;
     }
-    const duplicado = inscripcionService.obtenerTodos().some(i => i.estudianteId === estudianteId && i.cursoId === cursoId);
+    const duplicado = inscripcionService.obtenerTodos().some(i => i.estudianteId === estudianteId &&
+        i.cursoId === cursoId);
     if (duplicado) {
         alert("Ya inscrito");
         return;
     }
-    const nueva = {
+    inscripcionService.agregar({
         id: contadorInsId++,
         estudianteId,
         cursoId
-    };
-    inscripcionService.agregar(nueva);
-    actualizarInscripciones();
+    });
+    actualizarTodo();
 });
+// =========================
+// ACTUALIZACIONES
+// =========================
+function actualizarTodo() {
+    renderEstudiantes(servicio.obtenerTodos(), eliminarEstudiante);
+    renderCursos(cursoService.obtenerTodos(), eliminarCurso);
+    actualizarSelects();
+    actualizarInscripciones();
+    actualizarStats();
+}
+function eliminarEstudiante(id) {
+    servicio.eliminar(id);
+    actualizarTodo();
+}
+function eliminarCurso(id) {
+    cursoService.eliminar(id);
+    actualizarTodo();
+}
 function actualizarSelects() {
     selectEstudiante.innerHTML = "";
     servicio.obtenerTodos().forEach(e => {
         const option = document.createElement("option");
         option.value = e.id.toString();
-        option.text = `${e.nombre} (${e.estado})`;
+        option.textContent = `${e.nombre} (${e.estado})`;
         selectEstudiante.appendChild(option);
     });
     selectCurso.innerHTML = "";
     cursoService.obtenerTodos().forEach(c => {
         const option = document.createElement("option");
         option.value = c.id.toString();
-        option.text = `${c.nombre} (${c.estado})`;
+        option.textContent = `${c.nombre} (${c.estado})`;
         selectCurso.appendChild(option);
     });
 }
 function actualizarInscripciones() {
     renderInscripciones(inscripcionService.obtenerTodos(), servicio.obtenerTodos(), cursoService.obtenerTodos(), (id) => {
         inscripcionService.eliminar(id);
-        actualizarInscripciones();
+        actualizarTodo();
     });
 }
-actualizarUI();
-actualizarCursos();
-actualizarSelects();
-actualizarInscripciones();
+function actualizarStats() {
+    totalEstudiantes.textContent = servicio.obtenerTodos().length.toString();
+    totalCursos.textContent = cursoService.obtenerTodos().length.toString();
+    totalInscripciones.textContent = inscripcionService.obtenerTodos().length.toString();
+}
+// INIT
+actualizarTodo();
