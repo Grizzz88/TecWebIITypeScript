@@ -1,21 +1,35 @@
 import { Curso } from "../models/curso.js";
 
-export function renderCursos(lista: Curso[], eliminarFn: (id: number) => void) {
-    const contenedor = document.getElementById("listaCursos")!;
-    contenedor.innerHTML = "";
+type AccionesCurso = {
+    eliminar: (id: number) => void;
+    editar: (id: number) => void;
+    cambiarEstado: (id: number) => void;
+};
+
+export function renderCursos(lista: Curso[], acciones: AccionesCurso) {
+    const tbody = document.getElementById("listaCursos")!;
+    tbody.innerHTML = "";
 
     lista.forEach(curso => {
-        const li = document.createElement("li");
-
-        li.innerHTML = `
-            ${curso.nombre} - ${curso.cupoMaximo} créditos
-            <button data-id="${curso.id}">X</button>
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${curso.id}</td>
+            <td>${curso.nombre}</td>
+            <td>${curso.sigla}</td>
+            <td>${curso.docente}</td>
+            <td>${curso.cupoMaximo}</td>
+            <td>${curso.estado}</td>
+            <td>
+                <button class="btn-accion" data-action="editar">Editar</button>
+                <button class="btn-accion" data-action="estado">Cambiar estado</button>
+                <button class="btn-accion btn-peligro" data-action="eliminar">Eliminar</button>
+            </td>
         `;
 
-        li.querySelector("button")!.addEventListener("click", () => {
-            eliminarFn(curso.id);
-        });
+        tr.querySelector('[data-action="editar"]')!.addEventListener("click", () => acciones.editar(curso.id));
+        tr.querySelector('[data-action="estado"]')!.addEventListener("click", () => acciones.cambiarEstado(curso.id));
+        tr.querySelector('[data-action="eliminar"]')!.addEventListener("click", () => acciones.eliminar(curso.id));
 
-        contenedor.appendChild(li);
+        tbody.appendChild(tr);
     });
 }

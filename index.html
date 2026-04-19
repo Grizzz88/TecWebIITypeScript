@@ -1,58 +1,128 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Sistema de Gestión Académica</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de Gestion Academica</title>
+    <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
+    <main class="layout">
+        <h1>Sistema de Gestion Academica</h1>
 
-    <h1>Sistema de Gestión Académica</h1>
+        <section class="card">
+            <h2>Estudiantes</h2>
+            <div class="grid-form">
+                <input type="text" id="nombre" placeholder="Nombre completo" />
+                <input type="email" id="email" placeholder="Correo" />
+                <input type="number" id="edad" placeholder="Edad" min="1" />
+                <input type="text" id="carrera" placeholder="Carrera" />
+                <button id="btnAgregar">Agregar estudiante</button>
+            </div>
+            <div class="filtros">
+                <input type="text" id="buscarEstudiante" placeholder="Buscar por nombre" />
+                <select id="filtroEstadoEstudiante">
+                    <option value="todos">Todos</option>
+                    <option value="activo">Activos</option>
+                    <option value="inactivo">Inactivos</option>
+                </select>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Edad</th>
+                        <th>Carrera</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="listaEstudiantes"></tbody>
+            </table>
+        </section>
 
-    <section>
-        <h2>Estudiantes</h2>
+        <section class="card">
+            <h2>Cursos</h2>
+            <div class="grid-form">
+                <input type="text" id="nombreCurso" placeholder="Nombre del curso" />
+                <input type="text" id="sigla" placeholder="Sigla" />
+                <input type="text" id="docente" placeholder="Docente" />
+                <input type="number" id="cupo" placeholder="Cupo maximo" min="1" />
+                <button id="btnAgregarCurso">Agregar curso</button>
+            </div>
+            <div class="filtros">
+                <input type="text" id="buscarCurso" placeholder="Buscar por nombre o sigla" />
+                <select id="filtroEstadoCurso">
+                    <option value="todos">Todos</option>
+                    <option value="disponible">Disponibles</option>
+                    <option value="cerrado">Cerrados</option>
+                </select>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Sigla</th>
+                        <th>Docente</th>
+                        <th>Cupo</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="listaCursos"></tbody>
+            </table>
+        </section>
 
-        <input type="text" id="nombre" placeholder="Nombre completo" />
-        <input type="email" id="email" placeholder="Correo" />
-        <input type="number" id="edad" placeholder="Edad" />
-        <input type="text" id="carrera" placeholder="Carrera" />
+        <section class="card">
+            <h2>Inscripciones</h2>
+            <div class="grid-form-inscripcion">
+                <select id="selectEstudiante"></select>
+                <select id="selectCurso"></select>
+                <button id="btnInscribir">Inscribir</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Estudiante</th>
+                        <th>Curso</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="listaInscripciones"></tbody>
+            </table>
+        </section>
 
-        <button id="btnAgregar">Agregar Estudiante</button>
+        <section class="card relaciones">
+            <h2>Relaciones</h2>
+            <div class="relacion-bloque">
+                <h3>Cursos de un estudiante</h3>
+                <select id="selectRelacionEstudiante"></select>
+                <ul id="cursosDeEstudiante"></ul>
+            </div>
+            <div class="relacion-bloque">
+                <h3>Estudiantes de un curso</h3>
+                <select id="selectRelacionCurso"></select>
+                <ul id="estudiantesDeCurso"></ul>
+            </div>
+        </section>
 
-        <ul id="listaEstudiantes"></ul>
-    </section>
-
-    <section>
-        <h2>Cursos</h2>
-
-        <input type="text" id="nombreCurso" placeholder="Nombre del curso" />
-        <input type="number" id="creditos" placeholder="Cupo máximo" />
-
-        <button id="btnAgregarCurso">Agregar Curso</button>
-
-        <ul id="listaCursos"></ul>
-    </section>
-
-    <section>
-        <h2>Inscripciones</h2>
-
-        <select id="selectEstudiante"></select>
-        <select id="selectCurso"></select>
-
-        <button id="btnInscribir">Inscribir</button>
-
-        <ul id="listaInscripciones"></ul>
-    </section>
-
-    <section>
-        <h2>Estadísticas</h2>
-
-        <p>Total estudiantes: <span id="totalEstudiantes">0</span></p>
-        <p>Total cursos: <span id="totalCursos">0</span></p>
-        <p>Total inscripciones: <span id="totalInscripciones">0</span></p>
-    </section>
+        <section class="card stats">
+            <h2>Estadisticas</h2>
+            <p>Total estudiantes: <span id="totalEstudiantes">0</span></p>
+            <p>Total cursos: <span id="totalCursos">0</span></p>
+            <p>Total inscripciones: <span id="totalInscripciones">0</span></p>
+            <p>Curso con mas inscritos: <span id="cursoMasInscritos">Sin datos</span></p>
+            <p>Cantidad de estudiantes activos: <span id="estudiantesActivos">0</span></p>
+            <p>Cantidad de cursos cerrados: <span id="cursosCerrados">0</span></p>
+        </section>
+    </main>
 
     <script type="module" src="./dist/app.js" defer></script>
-
 </body>
 </html>

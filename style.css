@@ -1,0 +1,137 @@
+:root {
+    --fondo: #f4f6fb;
+    --texto: #12213a;
+    --card: #ffffff;
+    --borde: #dbe2f1;
+    --primario: #1d4f91;
+    --primario-hover: #153e72;
+    --peligro: #b63b3b;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    color: var(--texto);
+    background: linear-gradient(180deg, #f8fbff 0%, #edf2fb 100%);
+}
+
+.layout {
+    width: min(1200px, 94%);
+    margin: 1.5rem auto 2rem;
+    display: grid;
+    gap: 1rem;
+}
+
+h1,
+h2,
+h3 {
+    margin: 0 0 0.8rem;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+.grid-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
+}
+
+.grid-form-inscripcion {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
+}
+
+.filtros {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
+}
+
+input,
+select,
+button {
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 0.55rem 0.65rem;
+    font-size: 0.95rem;
+}
+
+button {
+    background: var(--primario);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--primario-hover);
+}
+
+.btn-accion {
+    margin-right: 0.35rem;
+    margin-bottom: 0.25rem;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.82rem;
+}
+
+.btn-peligro {
+    background: var(--peligro);
+}
+
+.btn-peligro:hover {
+    background: #912e2e;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 780px;
+}
+
+th,
+td {
+    border-bottom: 1px solid var(--borde);
+    padding: 0.55rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    background: #f2f6ff;
+}
+
+.relaciones {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.relacion-bloque ul {
+    margin-top: 0.7rem;
+    padding-left: 1.15rem;
+}
+
+.stats p {
+    margin: 0.3rem 0;
+}
+
+@media (max-width: 768px) {
+    .filtros,
+    .grid-form-inscripcion {
+        grid-template-columns: 1fr;
+    }
+}
