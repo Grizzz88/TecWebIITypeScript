@@ -17,12 +17,29 @@ export class CursoService {
         this.cursos = this.cursos.filter(c => c.id !== id);
         guardar("cursos", this.cursos);
     }
+
+    actualizar(id: number, cambios: Omit<Curso, "id">): void {
+        const indice = this.cursos.findIndex(c => c.id === id);
+        if (indice >= 0) {
+            this.cursos[indice] = { id, ...cambios };
+            guardar("cursos", this.cursos);
+        }
+    }
+
+    obtenerPorId(id: number): Curso | undefined {
+        return this.cursos.find(c => c.id === id);
+    }
+
+    reemplazarTodos(lista: Curso[]): void {
+        this.cursos = [...lista];
+        guardar("cursos", this.cursos);
+    }
     
     cambiarEstado(id: number): void {
-    const curso = this.cursos.find(c => c.id === id);
-    if (curso) {
-        curso.estado = curso.estado === "disponible" ? "cerrado" : "disponible";
-        guardar("cursos", this.cursos);
+        const curso = this.cursos.find(c => c.id === id);
+        if (curso) {
+            curso.estado = curso.estado === "disponible" ? "cerrado" : "disponible";
+            guardar("cursos", this.cursos);
         }
     }
 }
