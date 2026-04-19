@@ -8,7 +8,7 @@ export function renderEstudiantes(lista: Estudiante[], eliminarFn: (id: number) 
         const li = document.createElement("li");
 
         li.innerHTML = `
-            ${est.nombre} - ${est.email}
+            ${est.nombre} - ${est.correo}
             <button data-id="${est.id}">X</button>
         `;
 

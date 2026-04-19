@@ -4,7 +4,7 @@ export function renderCursos(lista, eliminarFn) {
     lista.forEach(curso => {
         const li = document.createElement("li");
         li.innerHTML = `
-            ${curso.nombre} - ${curso.creditos} créditos
+            ${curso.nombre} - ${curso.cupoMaximo} créditos
             <button data-id="${curso.id}">X</button>
         `;
         li.querySelector("button").addEventListener("click", () => {

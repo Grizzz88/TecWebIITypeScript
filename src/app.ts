@@ -2,23 +2,47 @@ import { EstudianteService } from "./services/estudiante.service.js";
 import { renderEstudiantes } from "./ui/render.estudiantes.js";
 import { Estudiante } from "./models/estudiante.js";
 
-const servicio = new EstudianteService();
+import { CursoService } from "./services/curso.service.js";
+import { renderCursos } from "./ui/render.cursos.js";
+import { Curso } from "./models/curso.js";
 
-let contadorId = 1;
+import { InscripcionService } from "./services/inscripcion.service.js";
+import { renderInscripciones } from "./ui/render.inscripciones.js";
+
+const servicio = new EstudianteService();
+const cursoService = new CursoService();
+const inscripcionService = new InscripcionService();
+
+let contadorId = servicio.obtenerTodos().length + 1;
 
 const nombreInput = document.getElementById("nombre") as HTMLInputElement;
 const emailInput = document.getElementById("email") as HTMLInputElement;
 const btnAgregar = document.getElementById("btnAgregar") as HTMLButtonElement;
 
 btnAgregar.addEventListener("click", () => {
+    if (!nombreInput.value || !emailInput.value) {
+        alert("Campos vacíos");
+        return;
+    }
+
+    const duplicado = servicio.obtenerTodos().some(e => e.correo === emailInput.value);
+    if (duplicado) {
+        alert("Correo ya registrado");
+        return;
+    }
+
     const nuevo: Estudiante = {
         id: contadorId++,
         nombre: nombreInput.value,
-        email: emailInput.value
+        correo: emailInput.value,
+        estado: "activo",
+        edad: 0,
+        carrera: ""
     };
 
     servicio.agregar(nuevo);
     actualizarUI();
+    actualizarSelects();
 
     nombreInput.value = "";
     emailInput.value = "";
@@ -28,30 +52,40 @@ function actualizarUI() {
     renderEstudiantes(servicio.obtenerTodos(), (id) => {
         servicio.eliminar(id);
         actualizarUI();
+        actualizarSelects();
     });
 }
 
-import { CursoService } from "./services/curso.service.js";
-import { renderCursos } from "./ui/render.cursos.js";
-import { Curso } from "./models/curso.js";
+(window as any).cambiarEstadoEstudiante = (id: number) => {
+    servicio.cambiarEstado(id);
+    actualizarUI();
+    actualizarSelects();
+};
 
-const cursoService = new CursoService();
-
-let contadorCursoId = 1;
+let contadorCursoId = cursoService.obtenerTodos().length + 1;
 
 const nombreCursoInput = document.getElementById("nombreCurso") as HTMLInputElement;
 const creditosInput = document.getElementById("creditos") as HTMLInputElement;
 const btnAgregarCurso = document.getElementById("btnAgregarCurso") as HTMLButtonElement;
 
 btnAgregarCurso.addEventListener("click", () => {
+    if (!nombreCursoInput.value || !creditosInput.value) {
+        alert("Campos vacíos");
+        return;
+    }
+
     const nuevo: Curso = {
         id: contadorCursoId++,
         nombre: nombreCursoInput.value,
-        creditos: Number(creditosInput.value)
+        sigla: "",
+        docente: "",
+        cupoMaximo: Number(creditosInput.value),
+        estado: "disponible"
     };
 
     cursoService.agregar(nuevo);
     actualizarCursos();
+    actualizarSelects();
 
     nombreCursoInput.value = "";
     creditosInput.value = "";
@@ -61,25 +95,57 @@ function actualizarCursos() {
     renderCursos(cursoService.obtenerTodos(), (id) => {
         cursoService.eliminar(id);
         actualizarCursos();
+        actualizarSelects();
     });
 }
 
-import { InscripcionService } from "./services/inscripcion.service.js";
-import { renderInscripciones } from "./ui/render.inscripciones.js";
+(window as any).cambiarEstadoCurso = (id: number) => {
+    cursoService.cambiarEstado(id);
+    actualizarCursos();
+    actualizarSelects();
+};
 
-const inscripcionService = new InscripcionService();
-
-let contadorInsId = 1;
+let contadorInsId = inscripcionService.obtenerTodos().length + 1;
 
 const selectEstudiante = document.getElementById("selectEstudiante") as HTMLSelectElement;
 const selectCurso = document.getElementById("selectCurso") as HTMLSelectElement;
 const btnInscribir = document.getElementById("btnInscribir") as HTMLButtonElement;
 
 btnInscribir.addEventListener("click", () => {
+    const estudianteId = Number(selectEstudiante.value);
+    const cursoId = Number(selectCurso.value);
+
+    const estudiante = servicio.obtenerTodos().find(e => e.id === estudianteId);
+    const curso = cursoService.obtenerTodos().find(c => c.id === cursoId);
+
+    if (!estudiante || !curso) {
+        alert("Datos inválidos");
+        return;
+    }
+
+    if (estudiante.estado === "inactivo") {
+        alert("Estudiante inactivo");
+        return;
+    }
+
+    if (curso.estado === "cerrado") {
+        alert("Curso cerrado");
+        return;
+    }
+
+    const duplicado = inscripcionService.obtenerTodos().some(i =>
+        i.estudianteId === estudianteId && i.cursoId === cursoId
+    );
+
+    if (duplicado) {
+        alert("Ya inscrito");
+        return;
+    }
+
     const nueva = {
         id: contadorInsId++,
-        estudianteId: Number(selectEstudiante.value),
-        cursoId: Number(selectCurso.value)
+        estudianteId,
+        cursoId
     };
 
     inscripcionService.agregar(nueva);
@@ -91,7 +157,7 @@ function actualizarSelects() {
     servicio.obtenerTodos().forEach(e => {
         const option = document.createElement("option");
         option.value = e.id.toString();
-        option.text = e.nombre;
+        option.text = `${e.nombre} (${e.estado})`;
         selectEstudiante.appendChild(option);
     });
 
@@ -99,7 +165,7 @@ function actualizarSelects() {
     cursoService.obtenerTodos().forEach(c => {
         const option = document.createElement("option");
         option.value = c.id.toString();
-        option.text = c.nombre;
+        option.text = `${c.nombre} (${c.estado})`;
         selectCurso.appendChild(option);
     });
 }
@@ -115,3 +181,8 @@ function actualizarInscripciones() {
         }
     );
 }
+
+actualizarUI();
+actualizarCursos();
+actualizarSelects();
+actualizarInscripciones();

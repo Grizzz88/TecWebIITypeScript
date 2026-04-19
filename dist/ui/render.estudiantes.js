@@ -4,7 +4,7 @@ export function renderEstudiantes(lista, eliminarFn) {
     lista.forEach(est => {
         const li = document.createElement("li");
         li.innerHTML = `
-            ${est.nombre} - ${est.email}
+            ${est.nombre} - ${est.correo}
             <button data-id="${est.id}">X</button>
         `;
         li.querySelector("button").addEventListener("click", () => {
